@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>StreamMedia Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;600;700;800&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #f0f2f5;
+  --surface:  #ffffff;
+  --surface2: #f8f9fb;
+  --border:   #e4e7ed;
+  --border2:  #d0d5dd;
+  --text:     #111827;
+  --sub:      #6b7280;
+  --muted:    #9ca3af;
+  --accent:   #1d4ed8;
+  --accent-h: #1e40af;
+  --accent-l: #eff6ff;
+  --accent-b: #dbeafe;
+  --green:    #059669;
+  --green-l:  #ecfdf5;
+  --green-b:  #a7f3d0;
+  --red:      #dc2626;
+  --red-l:    #fef2f2;
+  --orange:   #d97706;
+  --orange-l: #fffbeb;
+  --sans:     'Cabinet Grotesk', sans-serif;
+  --mono:     'Fira Code', monospace;
+  --radius:   10px;
+  --shadow:   0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-m: 0 4px 12px rgba(0,0,0,.08);
+}
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* ── SIDEBAR ────────────────────────────── */
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: 230px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  z-index: 100;
+}
+
+.brand {
+  padding: 22px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 4px;
+}
+
+.brand-icon {
+  width: 32px; height: 32px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 15px; flex-shrink: 0;
+}
+
+.brand-name {
+  font-size: 16px; font-weight: 800;
+  color: var(--text); letter-spacing: -.4px;
+}
+
+.brand-tag {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--muted); letter-spacing: .3px;
+}
+
+nav { padding: 10px 0; flex: 1; overflow-y: auto; }
+
+.nav-label {
+  padding: 14px 20px 5px;
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--muted);
+}
+
+.nav-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 20px; margin: 1px 10px;
+  border-radius: 8px; cursor: pointer;
+  font-family: var(--sans); font-size: 13.5px; font-weight: 500;
+  color: var(--sub); border: none; background: none;
+  width: calc(100% - 20px); text-align: left;
+  transition: all .15s;
+}
+.nav-btn:hover { background: var(--bg); color: var(--text); }
+.nav-btn.active {
+  background: var(--accent-l);
+  color: var(--accent);
+  font-weight: 600;
+}
+.nav-ico { font-size: 15px; width: 18px; text-align: center; }
+
+.token-zone {
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--surface2);
+}
+.token-lbl {
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 5px;
+}
+.token-inp {
+  width: 100%; background: var(--surface);
+  border: 1px solid var(--border2); border-radius: 7px;
+  padding: 7px 10px; font-family: var(--mono); font-size: 11px;
+  color: var(--accent); outline: none; transition: border .15s;
+}
+.token-inp:focus { border-color: var(--accent); }
+
+/* ── MAIN ───────────────────────────────── */
+.main { margin-left: 230px; padding: 32px 36px; min-height: 100vh; }
+
+.page { display: none; animation: up .2s ease; }
+.page.active { display: block; }
+@keyframes up { from { opacity:0; transform:translateY(8px);} to {opacity:1;transform:none;} }
+
+/* ── PAGE HEADER ────────────────────────── */
+.phead {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 28px;
+}
+.ptitle { font-size: 24px; font-weight: 800; letter-spacing: -.6px; color: var(--text); }
+.ptitle em { color: var(--accent); font-style: normal; }
+.psub { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+.pill-online {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--green-l); border: 1px solid var(--green-b);
+  border-radius: 99px; padding: 5px 14px;
+  font-size: 12px; font-weight: 600; color: var(--green);
+}
+.dot-green {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green); animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ── GRIDS ──────────────────────────────── */
+.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 22px; }
+.g2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 22px; margin-bottom: 22px; }
+.g3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 22px; }
+
+/* ── STAT CARD ──────────────────────────── */
+.scard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.scard-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.scard-label { font-size: 12px; font-weight: 600; color: var(--sub); }
+.scard-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.ic-blue   { background: var(--accent-l); }
+.ic-green  { background: var(--green-l); }
+.ic-orange { background: var(--orange-l); }
+.ic-red    { background: var(--red-l); }
+.scard-val { font-size: 28px; font-weight: 800; letter-spacing: -1.5px; color: var(--text); line-height: 1; }
+.scard-hint { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 5px; }
+
+/* ── CARD ───────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .8px; color: var(--sub);
+  margin-bottom: 18px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* ── DROP ZONE ──────────────────────────── */
+.drop {
+  border: 1.5px dashed var(--border2);
+  border-radius: 9px; padding: 30px 20px;
+  text-align: center; cursor: pointer;
+  transition: all .2s; margin-bottom: 18px;
+  background: var(--surface2);
+}
+.drop:hover, .drop.over {
+  border-color: var(--accent);
+  background: var(--accent-l);
+}
+.drop-ico { font-size: 26px; margin-bottom: 8px; }
+.drop-txt { font-size: 13px; color: var(--sub); }
+.drop-txt b { color: var(--accent); }
+.drop-file { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-top: 5px; min-height: 16px; }
+
+/* ── FORM ───────────────────────────────── */
+.fg { margin-bottom: 15px; }
+.fl {
+  display: block; font-family: var(--mono); font-size: 10px;
+  letter-spacing: .8px; text-transform: uppercase;
+  color: var(--sub); margin-bottom: 5px;
+}
+.fsel, .finp {
+  width: 100%; background: var(--surface);
+  border: 1px solid var(--border2); border-radius: 7px;
+  padding: 9px 12px; font-family: var(--sans); font-size: 13px;
+  color: var(--text); outline: none; transition: border .15s;
+}
+.fsel:focus, .finp:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-b); }
+
+.rng-row { display: flex; align-items: center; gap: 12px; }
+.rng { flex: 1; accent-color: var(--accent); cursor: pointer; }
+.rng-v { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 600; width: 38px; text-align: right; }
+
+/* ── BUTTONS ─────────────────────────────  */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 7px; border: none; border-radius: 8px; cursor: pointer;
+  font-family: var(--sans); font-weight: 700; transition: all .15s;
+}
+.btn-primary {
+  background: var(--accent); color: white;
+  padding: 11px 20px; font-size: 14px; width: 100%;
+}
+.btn-primary:hover { background: var(--accent-h); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(29,78,216,.25); }
+.btn-primary:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-dl {
+  background: var(--green-l); color: var(--green);
+  border: 1.5px solid var(--green-b);
+  padding: 9px 18px; font-size: 13px; width: 100%;
+  border-radius: 8px; margin-top: 10px;
+}
+.btn-dl:hover { background: var(--green-b); transform: translateY(-1px); }
+
+.btn-sm {
+  background: var(--surface); border: 1px solid var(--border2);
+  color: var(--sub); padding: 6px 14px; font-size: 12px;
+  border-radius: 7px; font-family: var(--sans); font-weight: 600;
+}
+.btn-sm:hover { background: var(--bg); color: var(--text); }
+
+/* ── RESULT BOX ──────────────────────────── */
+.res {
+  border-radius: 9px; padding: 18px;
+  margin-top: 16px; display: none;
+}
+.res.show { display: block; }
+.res.ok  { background: var(--green-l); border: 1px solid var(--green-b); }
+.res.err { background: var(--red-l);   border: 1px solid #fecaca; }
+
+.res-head {
+  font-size: 13px; font-weight: 700;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+}
+.res-head.ok  { color: var(--green); }
+.res-head.err { color: var(--red); }
+
+.rg3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+.rg2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; margin-bottom: 12px; }
+.rg4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 12px; }
+
+.ri {
+  background: white; border-radius: 7px; padding: 9px 12px;
+  border: 1px solid rgba(0,0,0,.06);
+}
+.ri-l { font-family: var(--mono); font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
+.ri-v { font-family: var(--mono); font-size: 15px; font-weight: 500; color: var(--text); }
+.ri-v.ac { color: var(--accent); }
+.ri-v.gr { color: var(--green); font-weight: 700; }
+
+/* Progress */
+.pb-wrap { background: var(--border); border-radius: 99px; height: 5px; overflow: hidden; margin-bottom: 5px; }
+.pb { height: 100%; border-radius: 99px; transition: width .5s ease; }
+.pb.blue  { background: var(--accent); }
+.pb.green { background: var(--green); }
+.pb-row { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+
+/* Codec info */
+.codec-box {
+  background: white; border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 7px; padding: 12px 14px; margin-top: 10px;
+}
+.codec-ttl { font-family: var(--mono); font-size: 10px; color: var(--accent); font-weight: 600; margin-bottom: 7px; letter-spacing: .5px; }
+.codec-row { display: flex; gap: 10px; font-family: var(--mono); font-size: 11px; margin-bottom: 4px; }
+.codec-k { color: var(--muted); width: 90px; flex-shrink: 0; }
+.codec-v { color: var(--text); }
+
+/* Preview */
+.prev-img {
+  width: 100%; max-height: 150px; object-fit: contain;
+  border-radius: 7px; border: 1px solid var(--border);
+  margin-top: 10px; display: none; background: var(--bg);
+}
+
+/* ── SPINNER ────────────────────────────── */
+.spin {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: sp .65s linear infinite;
+  display: inline-block;
+}
+@keyframes sp { to { transform: rotate(360deg); } }
+
+/* ── WARNING BOX ────────────────────────── */
+.warn-box {
+  background: var(--orange-l); border: 1px solid #fcd34d;
+  border-radius: 7px; padding: 10px 14px;
+  font-size: 12px; color: var(--orange); margin-bottom: 14px;
+}
+
+/* ── TABLE ──────────────────────────────── */
+.tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.tbl th {
+  text-align: left; padding: 9px 14px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--muted);
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+}
+.tbl td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.tbl tr:last-child td { border: none; }
+.tbl tr:hover td { background: var(--surface2); }
+.ebadge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; font-family: var(--mono); }
+
+/* ── QOS ROWS ───────────────────────────── */
+.qrow { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.qrow:last-child { border: none; }
+.qk { font-size: 13.5px; font-weight: 500; color: var(--text); }
+.qv { font-family: var(--mono); font-size: 12px; color: var(--accent); font-weight: 600; }
+
+/* ── EMPTY ──────────────────────────────── */
+.empty { text-align: center; padding: 44px 0; color: var(--muted); }
+.empty-ico { font-size: 32px; opacity: .3; margin-bottom: 10px; }
+.empty-txt { font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-row">
+      <div class="brand-icon">▶</div>
+      <div class="brand-name">StreamMedia</div>
+    </div>
+    <div class="brand-tag">MULTIMEDIA COMPRESSION PLATFORM</div>
+  </div>
+
+  <nav>
+    <div class="nav-label">Vue générale</div>
+    <button class="nav-btn active" onclick="go('dash',this)"><span class="nav-ico">⊞</span> Dashboard</button>
+
+    <div class="nav-label">Compression</div>
+    <button class="nav-btn" onclick="go('image',this)"><span class="nav-ico">⊡</span> Image</button>
+    <button class="nav-btn" onclick="go('audio',this)"><span class="nav-ico">◎</span> Audio</button>
+    <button class="nav-btn" onclick="go('video',this)"><span class="nav-ico">▷</span> Vidéo</button>
+
+    <div class="nav-label">Système</div>
+    <button class="nav-btn" onclick="go('qos',this)"><span class="nav-ico">◈</span> QoS</button>
+    <button class="nav-btn" onclick="go('security',this)"><span class="nav-ico">⊛</span> Sécurité</button>
+  </nav>
+
+  <div class="token-zone">
+    <div class="token-lbl">🔑 Auth Token</div>
+    <input class="token-inp" id="tok" value="admin-token-2026"/>
+  </div>
+</aside>
+
+<!-- ════════════════════════════════════════
+     MAIN
+════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ── DASHBOARD ── -->
+  <div class="page active" id="p-dash">
+    <div class="phead">
+      <div>
+        <div class="ptitle">Dashboard <em>·</em></div>
+        <div class="psub">// Plateforme de compression multimédia</div>
+      </div>
+      <div class="pill-online"><div class="dot-green"></div>Serveur en ligne</div>
+    </div>
+
+    <div class="g4">
+      <div class="scard">
+        <div class="scard-top">
+          <span class="scard-label">Images traitées</span>
+          <div class="scard-icon ic-blue">🖼️</div>
+        </div>
+        <div class="scard-val" id="d-img">—</div>
+        <div class="scard-hint">JPEG · PNG · GIF · WebP</div>
+      </div>
+      <div class="scard">
+        <div class="scard-top">
+          <span class="scard-label">Fichiers audio</span>
+          <div class="scard-icon ic-green">🎵</div>
+        </div>
+        <div class="scard-val" id="d-aud">—</div>
+        <div class="scard-hint">MP3 · OGG · FLAC</div>
+      </div>
+      <div class="scard">
+        <div class="scard-top">
+          <span class="scard-label">Vidéos encodées</span>
+          <div class="scard-icon ic-orange">🎬</div>
+        </div>
+        <div class="scard-val" id="d-vid">—</div>
+        <div class="scard-hint">H.264 · H.265 · VP9</div>
+      </div>
+      <div class="scard">
+        <div class="scard-top">
+          <span class="scard-label">Espace économisé</span>
+          <div class="scard-icon ic-green">💾</div>
+        </div>
+        <div class="scard-val" id="d-saved">—</div>
+        <div class="scard-hint">Mo au total</div>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">Codecs & Standards</div>
+        <div class="qrow"><span class="qk">🖼️ Image</span><span class="qv">JPEG · PNG · GIF · WebP</span></div>
+        <div class="qrow"><span class="qk">🎵 Audio</span><span class="qv">MP3 · OGG · FLAC</span></div>
+        <div class="qrow"><span class="qk">🎬 Vidéo</span><span class="qv">H.264 · H.265 · VP9</span></div>
+        <div class="qrow"><span class="qk">🔒 Chiffrement</span><span class="qv">Fernet AES-128</span></div>
+        <div class="qrow"><span class="qk">📡 Rate Limit</span><span class="qv">100 req/min</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Métriques temps réel</div>
+        <div class="qrow"><span class="qk">Latence moyenne</span><span class="qv" id="d-lat">—</span></div>
+        <div class="qrow"><span class="qk">Requêtes totales</span><span class="qv" id="d-req">—</span></div>
+        <div class="qrow"><span class="qk">Accès refusés</span><span class="qv" style="color:var(--red)" id="d-fail">—</span></div>
+        <div class="qrow"><span class="qk">Erreurs</span><span class="qv" style="color:var(--orange)" id="d-err">—</span></div>
+        <div class="qrow"><span class="qk">FFmpeg</span><span class="qv" id="d-ffmpeg">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── IMAGE ── -->
+  <div class="page" id="p-image">
+    <div class="phead">
+      <div>
+        <div class="ptitle">Image <em>Compression</em></div>
+        <div class="psub">// JPEG · PNG · GIF · WebP — codage et téléchargement</div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">Paramètres</div>
+        <div class="drop" id="img-drop" onclick="document.getElementById('img-f').click()">
+          <div class="drop-ico">🖼️</div>
+          <div class="drop-txt">Glissez une image ou <b>cliquez ici</b></div>
+          <div class="drop-file" id="img-name"></div>
+        </div>
+        <input type="file" id="img-f" accept="image/*" style="display:none" onchange="selImg(this)"/>
+
+        <div class="fg">
+          <label class="fl">Format / Codec</label>
+          <select class="fsel" id="img-fmt" onchange="toggleQ()">
+            <option value="JPEG">JPEG — DCT, compression avec pertes</option>
+            <option value="PNG">PNG — DEFLATE, sans pertes</option>
+            <option value="GIF">GIF — LZW, palette 256 couleurs</option>
+            <option value="WEBP">WebP — VP8, haute efficacité</option>
+          </select>
+        </div>
+
+        <div class="fg" id="q-wrap">
+          <label class="fl">Qualité</label>
+          <div class="rng-row">
+            <input type="range" class="rng" id="img-q" min="10" max="95" value="75"
+                   oninput="document.getElementById('qv').textContent=this.value+'%'"/>
+            <span class="rng-v" id="qv">75%</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="img-btn" onclick="doImage()">
+          ⚡ Compresser l'image
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Résultat</div>
+        <div class="res" id="img-res">
+          <div class="res-head ok" id="img-rh"></div>
+          <div class="rg3" id="img-rs"></div>
+          <div id="img-pb"></div>
+          <div id="img-cd"></div>
+          <img class="prev-img" id="img-prev"/>
+          <button class="btn btn-dl" id="img-dl" onclick="download('img')" style="display:none">
+            ⬇️ Télécharger l'image compressée
+          </button>
+        </div>
+        <div class="empty" id="img-empty">
+          <div class="empty-ico">🖼️</div>
+          <div class="empty-txt">Résultats ici</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── AUDIO ── -->
+  <div class="page" id="p-audio">
+    <div class="phead">
+      <div>
+        <div class="ptitle">Audio <em>Compression</em></div>
+        <div class="psub">// MP3 · OGG · FLAC — codage psychoacoustique</div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">Paramètres</div>
+        <div class="drop" id="aud-drop" onclick="document.getElementById('aud-f').click()">
+          <div class="drop-ico">🎵</div>
+          <div class="drop-txt">Glissez un fichier WAV ou <b>cliquez ici</b></div>
+          <div class="drop-file" id="aud-name"></div>
+        </div>
+        <input type="file" id="aud-f" accept=".wav,audio/*" style="display:none" onchange="selAud(this)"/>
+
+        <div class="fg">
+          <label class="fl">Codec de sortie</label>
+          <select class="fsel" id="aud-fmt" onchange="toggleBr()">
+            <option value="mp3">MP3 — MPEG Layer III (avec pertes)</option>
+            <option value="ogg">OGG Vorbis — Libre (avec pertes)</option>
+            <option value="flac">FLAC — Sans pertes (archivage)</option>
+          </select>
+        </div>
+
+        <div class="fg" id="br-wrap">
+          <label class="fl">Débit binaire (Bitrate)</label>
+          <select class="fsel" id="aud-br">
+            <option value="64k">64 kbps — Faible</option>
+            <option value="96k">96 kbps — Moyenne</option>
+            <option value="128k" selected>128 kbps — Standard</option>
+            <option value="192k">192 kbps — Haute qualité</option>
+            <option value="256k">256 kbps — Très haute</option>
+            <option value="320k">320 kbps — Maximum MP3</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" id="aud-btn" onclick="doAudio()">
+          ⚡ Convertir le fichier
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Résultat</div>
+        <div class="res" id="aud-res">
+          <div class="res-head ok" id="aud-rh"></div>
+          <div class="rg4" id="aud-rs"></div>
+          <div id="aud-pb"></div>
+          <div id="aud-cd"></div>
+          <button class="btn btn-dl" id="aud-dl" onclick="download('aud')" style="display:none">
+            ⬇️ Télécharger le fichier audio compressé
+          </button>
+        </div>
+        <div class="empty" id="aud-empty">
+          <div class="empty-ico">🎵</div>
+          <div class="empty-txt">Résultats ici</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── VIDEO ── -->
+  <div class="page" id="p-video">
+    <div class="phead">
+      <div>
+        <div class="ptitle">Vidéo <em>Compression</em></div>
+        <div class="psub">// H.264 · H.265 · VP9 — codage hybride par blocs</div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">Paramètres</div>
+        <div class="drop" id="vid-drop" onclick="document.getElementById('vid-f').click()">
+          <div class="drop-ico">🎬</div>
+          <div class="drop-txt">Glissez une vidéo MP4 ou <b>cliquez ici</b></div>
+          <div class="drop-file" id="vid-name"></div>
+        </div>
+        <input type="file" id="vid-f" accept="video/*" style="display:none" onchange="selVid(this)"/>
+
+        <div class="fg">
+          <label class="fl">Codec vidéo</label>
+          <select class="fsel" id="vid-codec">
+            <option value="h264">H.264 / AVC — Standard universel</option>
+            <option value="h265">H.265 / HEVC — 4K, 50% plus efficace</option>
+            <option value="vp9">VP9 — Google, streaming web</option>
+          </select>
+        </div>
+
+        <div class="fg">
+          <label class="fl">CRF — Qualité (18=haute, 40=basse)</label>
+          <div class="rng-row">
+            <input type="range" class="rng" id="vid-crf" min="18" max="40" value="23"
+                   oninput="document.getElementById('crfv').textContent=this.value"/>
+            <span class="rng-v" id="crfv">23</span>
+          </div>
+        </div>
+
+        <div class="warn-box">
+          ⚠️ L'encodage vidéo peut prendre plusieurs minutes selon la taille du fichier.
+        </div>
+
+        <button class="btn btn-primary" id="vid-btn" onclick="doVideo()">
+          ⚡ Encoder la vidéo
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Résultat</div>
+        <div class="res" id="vid-res">
+          <div class="res-head ok" id="vid-rh"></div>
+          <div class="rg3" id="vid-rs"></div>
+          <div id="vid-pb"></div>
+          <div id="vid-cd"></div>
+          <button class="btn btn-dl" id="vid-dl" onclick="download('vid')" style="display:none">
+            ⬇️ Télécharger la vidéo compressée
+          </button>
+        </div>
+        <div class="empty" id="vid-empty">
+          <div class="empty-ico">🎬</div>
+          <div class="empty-txt">Résultats ici</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── QOS ── -->
+  <div class="page" id="p-qos">
+    <div class="phead">
+      <div>
+        <div class="ptitle">QoS <em>Métriques</em></div>
+        <div class="psub">// Qualité de service et indicateurs de performance</div>
+      </div>
+    </div>
+    <div class="g3">
+      <div class="scard">
+        <div class="scard-top"><span class="scard-label">Latence moyenne</span><div class="scard-icon ic-blue">⚡</div></div>
+        <div class="scard-val" id="q-lat">—</div>
+        <div class="scard-hint">millisecondes</div>
+      </div>
+      <div class="scard">
+        <div class="scard-top"><span class="scard-label">Requêtes traitées</span><div class="scard-icon ic-green">📊</div></div>
+        <div class="scard-val" id="q-req">—</div>
+        <div class="scard-hint">depuis démarrage</div>
+      </div>
+      <div class="scard">
+        <div class="scard-top"><span class="scard-label">Accès refusés</span><div class="scard-icon ic-red">🚫</div></div>
+        <div class="scard-val" id="q-fail" style="color:var(--red)">—</div>
+        <div class="scard-hint">tentatives bloquées</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Politique QoS</div>
+      <div class="qrow"><span class="qk">🚦 Rate Limiting</span><span class="qv">100 requêtes / minute / IP</span></div>
+      <div class="qrow"><span class="qk">⚡ Priorité</span><span class="qv">Image › Audio › Vidéo</span></div>
+      <div class="qrow"><span class="qk">⏱ Timeout image/audio</span><span class="qv">30 secondes</span></div>
+      <div class="qrow"><span class="qk">⏱ Timeout vidéo</span><span class="qv">300 secondes</span></div>
+      <div class="qrow"><span class="qk">📦 Taille max</span><span class="qv">50 Mo par fichier</span></div>
+      <div class="qrow"><span class="qk">🔄 Disponibilité</span><span class="qv">99.9% SLA</span></div>
+    </div>
+  </div>
+
+  <!-- ── SECURITY ── -->
+  <div class="page" id="p-security">
+    <div class="phead">
+      <div>
+        <div class="ptitle">Sécurité <em>& Logs</em></div>
+        <div class="psub">// Authentification · Chiffrement · Journal d'audit</div>
+      </div>
+      <button class="btn btn-sm" onclick="loadLogs()">↺ Actualiser</button>
+    </div>
+
+    <div class="g3" style="margin-bottom:20px">
+      <div class="scard">
+        <div class="scard-top"><span class="scard-label">Authentification</span><div class="scard-icon ic-blue">🔑</div></div>
+        <div style="font-size:15px;font-weight:700;margin:8px 0">Token Bearer</div>
+        <div class="scard-hint">Header X-Auth-Token</div>
+      </div>
+      <div class="scard">
+        <div class="scard-top"><span class="scard-label">Chiffrement</span><div class="scard-icon ic-green">🔒</div></div>
+        <div style="font-size:15px;font-weight:700;margin:8px 0">Fernet AES-128</div>
+        <div class="scard-hint">Données images chiffrées</div>
+      </div>
+      <div class="scard">
+        <div class="scard-top"><span class="scard-label">Accès refusés</span><div class="scard-icon ic-red">🚫</div></div>
+        <div class="scard-val" id="s-fail" style="color:var(--red)">—</div>
+        <div class="scard-hint">tentatives bloquées</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Journal d'audit</div>
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead>
+            <tr><th>Horodatage</th><th>Événement</th><th>Détails</th></tr>
+          </thead>
+          <tbody id="log-body">
+            <tr><td colspan="3" style="text-align:center;color:var(--muted);padding:24px">Cliquez sur Actualiser</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const API = "http://localhost:5000";
+let imgFile=null, audFile=null, vidFile=null;
+let dlFiles = { img: null, aud: null, vid: null };
+
+// -- Navigation --------------------------
+function go(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('p-'+name).classList.add('active');
+  btn.classList.add('active');
+  if (name==='dash')     loadDash();
+  if (name==='qos')      loadQoS();
+  if (name==='security') loadLogs();
+}
+
+const tok = () => document.getElementById('tok').value.trim();
+const H   = () => ({'X-Auth-Token': tok()});
+
+// -- Helpers ------------------------------
+function ri(l, v, cls='') {
+  return `<div class="ri"><div class="ri-l">${l}</div><div class="ri-v ${cls}">${v}</div></div>`;
+}
+function pb(pct, color='blue') {
+  return `<div class="pb-row"><span>Réduction</span><span style="color:var(--accent);font-weight:600">${pct}%</span></div>
+          <div class="pb-wrap"><div class="pb ${color}" style="width:${pct}%"></div></div>`;
+}
+function codecBox(info) {
+  if (!info || !Object.keys(info).length) return '';
+  const rows = Object.entries(info).map(([k,v]) =>
+    `<div class="codec-row"><span class="codec-k">${k}</span><span class="codec-v">${v}</span></div>`).join('');
+  return `<div class="codec-box"><div class="codec-ttl">> Informations codec</div>${rows}</div>`;
+}
+
+// -- Download ------------------------------
+function download(type) {
+  const fname = dlFiles[type];
+  if (!fname) return;
+  const a = document.createElement('a');
+  a.href = `${API}/api/download/${encodeURIComponent(fname)}`;
+  a.setAttribute('download', fname);
+  // Ajouter le header d'auth via fetch puis créer un blob
+  fetch(`${API}/api/download/${encodeURIComponent(fname)}`, { headers: H() })
+    .then(r => {
+      if (!r.ok) throw new Error('Fichier introuvable');
+      return r.blob();
+    })
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = fname;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+    })
+    .catch(e => alert('Erreur téléchargement : ' + e.message));
+}
+
+// -- Dashboard ----------------------------
+async function loadDash() {
+  try {
+    const [st, qos] = await Promise.all([
+      fetch(`${API}/api/status`).then(r=>r.json()),
+      fetch(`${API}/api/qos`, {headers:H()}).then(r=>r.json())
+    ]);
+    document.getElementById('d-img').textContent   = st.stats.images;
+    document.getElementById('d-aud').textContent   = st.stats.audio;
+    document.getElementById('d-vid').textContent   = st.stats.video;
+    document.getElementById('d-saved').textContent = st.stats.saved_mb.toFixed(1);
+    document.getElementById('d-lat').textContent   = qos.avg_latency_ms + ' ms';
+    document.getElementById('d-req').textContent   = qos.total_requests;
+    document.getElementById('d-fail').textContent  = qos.auth_failures;
+    document.getElementById('d-err').textContent   = st.stats.errors;
+    const ffEl = document.getElementById('d-ffmpeg');
+    ffEl.textContent = st.ffmpeg ? '[OK] Installé' : '[ERR] Non trouvé';
+    ffEl.style.color = st.ffmpeg ? 'var(--green)' : 'var(--red)';
+  } catch {
+    ['d-img','d-aud','d-vid','d-saved','d-lat','d-req','d-fail','d-err']
+      .forEach(id => document.getElementById(id).textContent = 'N/A');
+    document.getElementById('d-ffmpeg').textContent = '[!] Serveur hors ligne';
+  }
+}
+
+// -- Image --------------------------------
+function selImg(inp) { imgFile=inp.files[0]; document.getElementById('img-name').textContent = imgFile?' '+imgFile.name:''; }
+function toggleQ() {
+  const f = document.getElementById('img-fmt').value;
+  document.getElementById('q-wrap').style.display = (f==='PNG'||f==='GIF') ? 'none' : 'block';
+}
+
+async function doImage() {
+  if (!imgFile) { alert('Choisissez une image !'); return; }
+  const btn = document.getElementById('img-btn');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Compression...';
+  document.getElementById('img-empty').style.display='none';
+
+  const fd=new FormData();
+  fd.append('file', imgFile);
+  fd.append('quality', document.getElementById('img-q').value);
+  fd.append('format',  document.getElementById('img-fmt').value);
+
+  try {
+    const data = await fetch(`${API}/api/image/compress`,{method:'POST',headers:H(),body:fd}).then(r=>r.json());
+    const res  = document.getElementById('img-res');
+    res.classList.add('show');
+    if (data.success) {
+      document.getElementById('img-rh').className='res-head ok';
+      document.getElementById('img-rh').textContent='[OK] Compression reussie - '+data.time_ms+'ms';
+      document.getElementById('img-rs').innerHTML =
+        ri('Original', data.original_kb+' Ko') +
+        ri('Compressé', data.compressed_kb+' Ko','ac') +
+        ri('Réduction', data.reduction_pct+'%','gr');
+      document.getElementById('img-pb').innerHTML = pb(data.reduction_pct);
+      document.getElementById('img-cd').innerHTML = codecBox(data.codec_info);
+      if (data.preview) {
+        const pr=document.getElementById('img-prev');
+        pr.src=data.preview; pr.style.display='block';
+      }
+      // Bouton téléchargement
+      dlFiles.img = data.download_file;
+      document.getElementById('img-dl').style.display='flex';
+    } else {
+      document.getElementById('img-rh').className='res-head err';
+      document.getElementById('img-rh').textContent='[ERREUR] : '+data.error;
+      ['img-rs','img-pb','img-cd'].forEach(id=>document.getElementById(id).innerHTML='');
+      document.getElementById('img-dl').style.display='none';
+    }
+  } catch {
+    document.getElementById('img-res').classList.add('show');
+    document.getElementById('img-rh').className='res-head err';
+    document.getElementById('img-rh').textContent='[ERREUR] Serveur non accessible - lancez app.py';
+    document.getElementById('img-dl').style.display='none';
+  }
+  btn.disabled=false; btn.innerHTML='>> Compresser l\'image';
+}
+
+// -- Audio --------------------------------
+function selAud(inp) { audFile=inp.files[0]; document.getElementById('aud-name').textContent=audFile?' '+audFile.name:''; }
+function toggleBr() {
+  document.getElementById('br-wrap').style.display=
+    document.getElementById('aud-fmt').value==='flac'?'none':'block';
+}
+
+async function doAudio() {
+  if (!audFile) { alert('Choisissez un fichier WAV !'); return; }
+  const btn=document.getElementById('aud-btn');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Conversion...';
+  document.getElementById('aud-empty').style.display='none';
+
+  const fd=new FormData();
+  fd.append('file',    audFile);
+  fd.append('bitrate', document.getElementById('aud-br').value);
+  fd.append('format',  document.getElementById('aud-fmt').value);
+
+  try {
+    const data=await fetch(`${API}/api/audio/compress`,{method:'POST',headers:H(),body:fd}).then(r=>r.json());
+    const res=document.getElementById('aud-res');
+    res.classList.add('show');
+    if (data.success) {
+      document.getElementById('aud-rh').className='res-head ok';
+      document.getElementById('aud-rh').textContent='[OK] Conversion reussie - '+data.time_ms+'ms';
+      document.getElementById('aud-rs').innerHTML=
+        ri('Original', data.original_kb+' Ko') +
+        ri('Compressé', data.compressed_kb+' Ko','ac') +
+        ri('Réduction', data.reduction_pct+'%','gr') +
+        ri('Durée', data.duration_s+'s');
+      document.getElementById('aud-pb').innerHTML=pb(data.reduction_pct,'green');
+      document.getElementById('aud-cd').innerHTML=codecBox(data.codec_info);
+      dlFiles.aud=data.download_file;
+      document.getElementById('aud-dl').style.display='flex';
+    } else {
+      document.getElementById('aud-rh').className='res-head err';
+      document.getElementById('aud-rh').textContent='[ERREUR] : '+data.error;
+      ['aud-rs','aud-pb','aud-cd'].forEach(id=>document.getElementById(id).innerHTML='');
+      document.getElementById('aud-dl').style.display='none';
+    }
+  } catch {
+    document.getElementById('aud-res').classList.add('show');
+    document.getElementById('aud-rh').className='res-head err';
+    document.getElementById('aud-rh').textContent='[ERREUR] Serveur non accessible - lancez app.py';
+    document.getElementById('aud-dl').style.display='none';
+  }
+  btn.disabled=false; btn.innerHTML='>> Convertir le fichier';
+}
+
+// -- Video --------------------------------
+function selVid(inp) { vidFile=inp.files[0]; document.getElementById('vid-name').textContent=vidFile?' '+vidFile.name:''; }
+
+async function doVideo() {
+  if (!vidFile) { alert('Choisissez une vidéo !'); return; }
+  const btn=document.getElementById('vid-btn');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Encodage en cours...';
+  document.getElementById('vid-empty').style.display='none';
+
+  const fd=new FormData();
+  fd.append('file',  vidFile);
+  fd.append('codec', document.getElementById('vid-codec').value);
+  fd.append('crf',   document.getElementById('vid-crf').value);
+
+  try {
+    const data=await fetch(`${API}/api/video/compress`,{method:'POST',headers:H(),body:fd}).then(r=>r.json());
+    const res=document.getElementById('vid-res');
+    res.classList.add('show');
+    if (data.success) {
+      const secs=(data.time_ms/1000).toFixed(1);
+      document.getElementById('vid-rh').className='res-head ok';
+      document.getElementById('vid-rh').textContent='[OK] Encodage reussi - '+secs+'s';
+      document.getElementById('vid-rs').innerHTML=
+        ri('Original', data.original_mb+' Mo') +
+        ri('Compressé', data.compressed_mb+' Mo','ac') +
+        ri('Réduction', data.reduction_pct+'%','gr');
+      document.getElementById('vid-pb').innerHTML=pb(data.reduction_pct);
+      document.getElementById('vid-cd').innerHTML=codecBox(data.codec_info);
+      dlFiles.vid=data.download_file;
+      document.getElementById('vid-dl').style.display='flex';
+    } else {
+      document.getElementById('vid-rh').className='res-head err';
+      document.getElementById('vid-rh').textContent='[ERREUR] : '+(data.error||'Inconnue');
+      ['vid-rs','vid-pb','vid-cd'].forEach(id=>document.getElementById(id).innerHTML='');
+      document.getElementById('vid-dl').style.display='none';
+    }
+  } catch {
+    document.getElementById('vid-res').classList.add('show');
+    document.getElementById('vid-rh').className='res-head err';
+    document.getElementById('vid-rh').textContent='[ERREUR] Serveur non accessible - lancez app.py';
+    document.getElementById('vid-dl').style.display='none';
+  }
+  btn.disabled=false; btn.innerHTML='>> Encoder la vidéo';
+}
+
+// -- QoS ----------------------------------
+async function loadQoS() {
+  try {
+    const data=await fetch(`${API}/api/qos`,{headers:H()}).then(r=>r.json());
+    document.getElementById('q-lat').textContent  = data.avg_latency_ms+' ms';
+    document.getElementById('q-req').textContent  = data.total_requests;
+    document.getElementById('q-fail').textContent = data.auth_failures;
+  } catch {
+    ['q-lat','q-req','q-fail'].forEach(id=>document.getElementById(id).textContent='N/A');
+  }
+}
+
+// -- Logs ----------------------------------
+const BADGE_STYLE = {
+  IMAGE_COMPRESS: 'background:var(--accent-l);color:var(--accent)',
+  AUDIO_COMPRESS: 'background:var(--green-l);color:var(--green)',
+  VIDEO_COMPRESS: 'background:#f3e8ff;color:#7c3aed',
+  AUTH_FAILED:    'background:var(--red-l);color:var(--red)',
+};
+
+async function loadLogs() {
+  try {
+    const logs=await fetch(`${API}/api/logs`,{headers:H()}).then(r=>r.json());
+    const fail=logs.filter(l=>l.event==='AUTH_FAILED').length;
+    const sf=document.getElementById('s-fail');
+    if(sf) sf.textContent=fail;
+
+    const tbody=document.getElementById('log-body');
+    if (!logs.length) {
+      tbody.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:24px">Aucun événement enregistré</td></tr>';
+      return;
+    }
+    tbody.innerHTML=[...logs].reverse().slice(0,25).map(l=>{
+      const sty=BADGE_STYLE[l.event]||'background:var(--bg);color:var(--muted)';
+      const ts=l.timestamp.replace('T',' ').split('.')[0];
+      const det=Object.entries(l.details||{}).map(([k,v])=>`${k}: ${v}`).join(' · ');
+      return `<tr>
+        <td style="font-family:var(--mono);font-size:11px;white-space:nowrap">${ts}</td>
+        <td><span class="ebadge" style="${sty}">${l.event}</span></td>
+        <td style="font-family:var(--mono);font-size:11px;color:var(--sub)">${det}</td>
+      </tr>`;
+    }).join('');
+  } catch {
+    document.getElementById('log-body').innerHTML=
+      '<tr><td colspan="3" style="text-align:center;color:var(--red);padding:24px">[ERR] Serveur non accessible</td></tr>';
+  }
+}
+
+// -- Drag & Drop ---------------------------
+['img','aud','vid'].forEach(id=>{
+  const drop=document.getElementById(id+'-drop');
+  const inp =document.getElementById(id+'-f');
+  drop.addEventListener('dragover', e=>{e.preventDefault();drop.classList.add('over');});
+  drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+  drop.addEventListener('drop',e=>{
+    e.preventDefault(); drop.classList.remove('over');
+    const file=e.dataTransfer.files[0]; if(!file)return;
+    if(id==='img'){imgFile=file;document.getElementById('img-name').textContent=' '+file.name;}
+    if(id==='aud'){audFile=file;document.getElementById('aud-name').textContent=' '+file.name;}
+    if(id==='vid'){vidFile=file;document.getElementById('vid-name').textContent=' '+file.name;}
+  });
+});
+
+loadDash();
+</script>
+</body>
+</html>
